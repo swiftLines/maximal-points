@@ -1,3 +1,10 @@
+/*
+Jeremy Underwood
+Programming Project 2
+4/9/25
+The MaximaPoints class reads coordinates from a file and constructs a list of Point
+objects. It launches and initializes the GUI through the PointComposer pane.
+ */
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -29,8 +36,6 @@ public class MaximalPoints {
 
         PointDisplay.setPoints(pointList);
         Application.launch(PointDisplay.class);
-
-
     }
 
     public static class PointDisplay extends Application {
@@ -43,11 +48,11 @@ public class MaximalPoints {
         @Override
         public void start(Stage primaryStage) {
             PointComposer pane = new PointComposer(initialPoints);
-            Scene scene = new Scene(pane);
+            Scene scene = new Scene(pane, 500, 500);
             primaryStage.setScene(scene);
             primaryStage.setTitle("Maximal Points");
             primaryStage.setResizable(false);
             primaryStage.show();
         }
-    }
-}
+    }//end PointDisplay
+}//end MaximalPoints

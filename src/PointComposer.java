@@ -1,8 +1,15 @@
+/*
+Jeremy Underwood
+Programming Project 2
+4/9/25
+The PointComposer class renders points and connects the maximal points with lines.
+Further, it allows the user to add and remove points while adjusting the maximal
+points accordingly.
+ */
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -15,61 +22,57 @@ public class PointComposer extends Pane {
 
     public PointComposer(ArrayList<Point> points) {
         this.points = points;
+
         setPrefSize(500, 500);
+
         handleMouseClicks();
         connectMaximalSet();
     }
 
     private void handleMouseClicks() {
         setOnMouseClicked(event -> {
-            double xValue = event.getX();
-            double yValue = event.getY();
+            double xValue = Math.round(event.getX());
+            double yValue = Math.round(490 - event.getY());
 
             if (event.getButton() == MouseButton.PRIMARY) {
                 for (Point p : points) {
                     if (p.getX() == xValue && p.getY() == yValue) {
-                        System.out.println("Clicked Point: (" + p.getX() + ", " + p.getY() + ")");
                         return;
                     }
                 }
                 points.add(new Point(xValue, yValue));
             } else if (event.getButton() == MouseButton.SECONDARY) {
-                points.removeIf(p -> p.getX() == xValue && p.getY() == yValue);
+                double buffer = 5.0;
+                points.removeIf(p -> Math.abs(p.getX() - xValue) < buffer && Math.abs((490 - p.getY()) - event.getY()) < buffer);
             }
             connectMaximalSet();
         });
-
     }
 
     private void connectMaximalSet() {
         getChildren().clear();
+        double flipY = getPrefHeight() - 10;
 
         // Draw points
         for (Point p : points) {
-            Circle circle = new Circle(p.getX(), p.getY(), 4);
+            Circle circle = new Circle(p.getX(), flipY - p.getY(), 4);
             circle.setFill(Color.BLACK);
             getChildren().add(circle);
         }
 
         ArrayList<Point> maximalPoints = new ArrayList<>();
-        for (Point candidate : points) {
-            boolean isMaximal = true;
+        for (Point current : points) {
+            boolean maximal = true;
 
             for (Point other : points) {
-                if (other.getX() > candidate.getX() && other.getY() > candidate.getY()) {
-                    isMaximal = false;
+                if (current.isBelowAndLeftOf(other)) {
+                    maximal = false;
                     break;
                 }
             }
-            if (isMaximal) {
-                maximalPoints.add(candidate);
+            if (maximal) {
+                maximalPoints.add(current);
             }
-        }
-
-        // Debug: Print the maximal points before sorting
-        System.out.println("Maximal points (before sorting):");
-        for (Point mp : maximalPoints) {
-            System.out.println("Point: (" + mp.getX() + ", " + mp.getY() + ")");
         }
 
         Collections.sort(maximalPoints);
@@ -78,17 +81,14 @@ public class PointComposer extends Pane {
             Point p1 = maximalPoints.get(i);
             Point p2 = maximalPoints.get(i + 1);
 
-            // Draw horizontal line from p1 to p2.x
-            Line horizontal = new Line(p1.getX(), p1.getY(), p2.getX(), p1.getY());
-            horizontal.setStroke(Color.BLACK);
-            getChildren().add(horizontal);
+            double x1 = p1.getX();
+            double y1 = flipY - p1.getY();
+            double x2 = p2.getX();
+            double y2 = flipY - p2.getY();
 
-            // Draw vertical line from p2.x at p1.y to p2.y
-            Line vertical = new Line(p2.getX(), p1.getY(), p2.getX(), p2.getY());
-            vertical.setStroke(Color.BLACK);
-            getChildren().add(vertical);
+            Line line = new Line(x1, y1, x2, y2);
+            line.setStroke(Color.BLACK);
+            getChildren().add(line);
         }
-
     }
-
-}
+}//end class

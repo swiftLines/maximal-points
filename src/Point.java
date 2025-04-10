@@ -1,10 +1,18 @@
+/*
+Jeremy Underwood
+Programming Project 2
+4/9/25
+The Point class instantiates points based on x and y coordinates. It has a method
+that determines if another point is below and left of the current point, and an
+overridden method to compare points by the x coordinate.
+ */
 public class Point implements Comparable<Point> {
     private final double x;
     private final double y;
 
     public Point(double x, double y) {
-        this.x = x;
-        this.y = y;
+        this.x = Math.round(x);
+        this.y = Math.round(y);
     }
 
     public double getX() {
@@ -15,15 +23,13 @@ public class Point implements Comparable<Point> {
         return y;
     }
 
-    // Returns true if the other point is below and to the left of this point
     public boolean isBelowAndLeftOf(Point other) {
-        return other.x < this.x && other.y < this.y;
+        return this.x < other.x && this.y < other.y;
     }
 
-    // Compare by x-coordinate only
     @Override
     public int compareTo(Point other) {
         return Double.compare(this.x, other.x);
     }
-}
+}//end class
 
